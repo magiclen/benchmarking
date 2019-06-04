@@ -98,7 +98,7 @@ fn main() {
         /*
             let mut i = 0;
 
-            while loop_seq < VEC_LENGTH {
+            while i < VEC_LENGTH {
                 // Start the measurement
                 vec.push(i);
                 // End the measurement
