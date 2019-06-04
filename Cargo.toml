@@ -1,0 +1,13 @@
+[package]
+name = "benchmarking"
+version = "0.1.0"
+authors = ["Magic Len <len@magiclen.org>"]
+homepage = "https://magiclen.org/crc-any"
+keywords = ["benchmark", "bench", "execution", "time"]
+categories = ["algorithms"]
+description= "This crate can be used to execute something and measure the execution time in nano seconds. It does not output anything to the screen and the filesystem."
+readme = "README.md"
+license = "MIT"
+
+
+[dependencies]
