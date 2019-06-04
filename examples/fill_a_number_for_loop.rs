@@ -25,5 +25,5 @@ fn main() {
         */
     }).unwrap();
 
-    println!("Filling a number into a vec takes {} nano seconds!", bench_result);
+    println!("Pushing a number into a vec takes {} nano seconds!", bench_result);
 }
