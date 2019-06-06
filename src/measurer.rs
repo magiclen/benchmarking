@@ -19,14 +19,14 @@ impl From<()> for MeasureLoopResult {
 #[derive(Debug, Default)]
 /// To measure the execution time.
 pub struct Measurer {
-    pub(crate) seq: u64,
+    pub(crate) seq: u128,
     pub(crate) result: Option<MeasureResult>,
 }
 
 impl Measurer {
     #[inline]
     /// Get the sequence of the current measurement.
-    pub fn get_seq(&self) -> u64 {
+    pub fn get_seq(&self) -> u128 {
         self.seq
     }
 
@@ -46,7 +46,7 @@ impl Measurer {
     fn update(&mut self, elapsed: Duration) {
         match &mut self.result {
             Some(result) => {
-                result.count += 1;
+                result.times += 1;
 
                 result.total_elapsed += elapsed;
             }

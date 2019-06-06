@@ -5,7 +5,7 @@ fn main() {
 
     benchmarking::warm_up();
 
-    let bench_result = benchmarking::measure_function(|measurer| {
+    let bench_result = benchmarking::bench_function(|measurer| {
         let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
 
         measurer.measure_while_loop(|loop_seq| {
@@ -27,5 +27,5 @@ fn main() {
         */
     }).unwrap();
 
-    println!("Pushing a number into a vec takes {} nano seconds!", bench_result);
+    println!("Pushing a number into a vec takes {:?}!", bench_result.elapsed());
 }
