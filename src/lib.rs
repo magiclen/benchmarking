@@ -1,7 +1,7 @@
 /*!
 # Benchmarking
 
-This crate can be used to execute something and measure the execution time in nano seconds. It does not output anything to the screen and the filesystem.
+This crate can be used to execute something and measure the execution time. It does not output anything to screens and filesystems.
 
 ## Examples
 

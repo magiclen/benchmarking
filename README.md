@@ -4,7 +4,7 @@ Benchmarking
 [![Build Status](https://travis-ci.org/magiclen/benchmarking.svg?branch=master)](https://travis-ci.org/magiclen/benchmarking)
 [![Build status](https://ci.appveyor.com/api/projects/status/y0iwlve66ral4peo/branch/master?svg=true)](https://ci.appveyor.com/project/magiclen/benchmarking/branch/master)
 
-This crate can be used to execute something and measure the execution time in nano seconds. It does not output anything to the screen and the filesystem.
+This crate can be used to execute something and measure the execution time. It does not output anything to screens and filesystems.
 
 ## Examples
 
