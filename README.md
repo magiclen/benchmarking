@@ -11,16 +11,12 @@ This crate can be used to execute something and measure the execution time in na
 ```rust
 extern crate benchmarking;
 
-use benchmarking::Benchmark;
-
 fn main() {
     const VEC_LENGTH: usize = 100;
 
-    let mut benchmark = Benchmark::default();
+    benchmarking::warm_up();
 
-    benchmark.warm_up();
-
-    let bench_result = benchmark.bench_function(|measurer| {
+    let bench_result = benchmarking::measure_function(|measurer| {
         let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
 
         measurer.measure(|| {
@@ -45,19 +41,15 @@ fn main() {
 ```rust
 extern crate benchmarking;
 
-use benchmarking::Benchmark;
-
 fn main() {
     const VEC_LENGTH: usize = 100;
 
-    let mut benchmark = Benchmark::default();
+    benchmarking::warm_up();
 
-    benchmark.warm_up();
-
-    let bench_result = benchmark.bench_function(|measurer| {
+    let bench_result = benchmarking::measure_function(|measurer| {
         let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
 
-        measurer.measure_for_loop(0..VEC_LENGTH, |loop_seq| {
+        measurer.measure_for_loop(0..VEC_LENGTH, |_, loop_seq| {
             vec.push(loop_seq);
         });
 
@@ -77,16 +69,12 @@ fn main() {
 ```rust
 extern crate benchmarking;
 
-use benchmarking::Benchmark;
-
 fn main() {
     const VEC_LENGTH: usize = 100;
 
-    let mut benchmark = Benchmark::default();
+    benchmarking::warm_up();
 
-    benchmark.warm_up();
-
-    let bench_result = benchmark.bench_function(|measurer| {
+    let bench_result = benchmarking::measure_function(|measurer| {
         let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
 
         measurer.measure_while_loop(|loop_seq| {
