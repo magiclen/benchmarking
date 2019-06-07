@@ -155,23 +155,27 @@ pub fn warm_up_multi_thread(thread_count: usize) {
 
 /// To stimulate CPUs to wake up. The running duration is `3` seconds.
 pub fn warm_up_multi_thread_with_duration(thread_count: usize, duration: Duration) {
-    let lock = Arc::new(AtomicBool::new(true));
+    if thread_count > 1 {
+        let lock = Arc::new(AtomicBool::new(true));
 
-    for _ in 0..thread_count {
-        let lock = lock.clone();
+        for _ in 0..thread_count {
+            let lock = Arc::clone(&lock);
 
-        thread::spawn(move || {
-            loop {
-                if !lock.load(Ordering::Relaxed) {
-                    break;
+            thread::spawn(move || {
+                loop {
+                    if !lock.load(Ordering::Relaxed) {
+                        break;
+                    }
                 }
-            }
-        });
+            });
+        }
+
+        thread::sleep(duration);
+
+        lock.store(false, Ordering::Relaxed);
+    } else {
+        warm_up_with_duration(duration);
     }
-
-    thread::sleep(duration);
-
-    lock.store(true, Ordering::Relaxed);
 }
 
 #[inline]

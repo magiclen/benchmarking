@@ -3,6 +3,8 @@ extern crate benchmarking;
 fn main() {
     const VEC_LENGTH: usize = 100;
 
+    benchmarking::warm_up();
+
     let bench_result = benchmarking::bench_function(|measurer| {
         let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
 
