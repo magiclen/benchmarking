@@ -324,3 +324,238 @@ pub fn multi_thread_bench_function_with_duration<F>(number_of_threads: usize, du
 
     Ok(measure_result)
 }
+
+// TODO n
+
+#[inline]
+/// Run a function 10 times and measure its execution time.
+pub fn measure_function_n<F>(n: usize, f: F) -> Result<Vec<MeasureResult>, BenchmarkError> where F: FnMut(&mut [Measurer]) + 'static {
+    measure_function_n_with_times(n, DEFAULT_MEASURE_TIMES, f)
+}
+
+/// Run a function with a specific times and measure its execution time.
+pub fn measure_function_n_with_times<F>(n: usize, times: u64, mut f: F) -> Result<Vec<MeasureResult>, BenchmarkError> where F: FnMut(&mut [Measurer]) + 'static {
+    debug_assert!(times > 0);
+
+    let mut measurers = {
+        let mut v = Vec::with_capacity(n);
+
+        for _ in 0..n {
+            v.push(Measurer::default());
+        }
+
+        v
+    };
+
+    f(&mut measurers);
+
+    let mut measure_results = {
+        let mut v = Vec::with_capacity(n);
+
+        for measurer in measurers.iter_mut() {
+            v.push(measurer.result.take().ok_or(BenchmarkError::MeasurerNotMeasured)?);
+        }
+
+        v
+    };
+
+    for _ in 1..times {
+        f(&mut measurers);
+
+        for (i, measure_result) in measure_results.iter_mut().enumerate() {
+            let measurer = &mut measurers[i];
+
+            let result = measurer.result.take().ok_or(BenchmarkError::MeasurerNotMeasured)?;
+
+            measure_result.times += result.times;
+            measure_result.total_elapsed += result.total_elapsed;
+
+            measurer.seq += 1;
+        }
+    }
+
+    Ok(measure_results)
+}
+
+#[inline]
+/// Run a function for 5 seconds and measure its execution time.
+pub fn bench_function_n<F>(n: usize, f: F) -> Result<Vec<MeasureResult>, BenchmarkError> where F: FnMut(&mut [Measurer]) + 'static {
+    bench_function_n_with_duration(n, Duration::from_millis(DEFAULT_MEASURE_DURATION), f)
+}
+
+/// Run a function with a specific duration and measure its execution time.
+pub fn bench_function_n_with_duration<F>(n: usize, duration: Duration, mut f: F) -> Result<Vec<MeasureResult>, BenchmarkError> where F: FnMut(&mut [Measurer]) + 'static {
+    let mut measurers = {
+        let mut v = Vec::with_capacity(n);
+
+        for _ in 0..n {
+            v.push(Measurer::default());
+        }
+
+        v
+    };
+
+    f(&mut measurers);
+
+    let mut measure_results = {
+        let mut v = Vec::with_capacity(n);
+
+        for measurer in measurers.iter_mut() {
+            v.push(measurer.result.take().ok_or(BenchmarkError::MeasurerNotMeasured)?);
+        }
+
+        v
+    };
+
+    let start = Instant::now();
+
+    loop {
+        f(&mut measurers);
+
+        for (i, measure_result) in measure_results.iter_mut().enumerate() {
+            let measurer = &mut measurers[i];
+
+            let result = measurer.result.take().ok_or(BenchmarkError::MeasurerNotMeasured)?;
+
+            measure_result.times += result.times;
+            measure_result.total_elapsed += result.total_elapsed;
+
+            measurer.seq += 1;
+        }
+
+        if start.elapsed() >= duration {
+            break;
+        }
+    }
+
+    Ok(measure_results)
+}
+
+#[inline]
+/// Run a function with a number of threads for 5 seconds and measure its execution time.
+pub fn multi_thread_bench_function_n<F>(n: usize, number_of_threads: usize, f: F) -> Result<Vec<MeasureResult>, BenchmarkError> where F: Fn(&mut [Measurer]) + Send + Sync + 'static {
+    multi_thread_bench_function_n_with_duration(n, number_of_threads, Duration::from_millis(DEFAULT_MEASURE_DURATION), f)
+}
+
+/// Run a function with a number of threads and a specific duration and measure its execution time.
+pub fn multi_thread_bench_function_n_with_duration<F>(n: usize, number_of_threads: usize, duration: Duration, f: F) -> Result<Vec<MeasureResult>, BenchmarkError> where F: Fn(&mut [Measurer]) + Send + Sync + 'static {
+    debug_assert!(number_of_threads > 0);
+
+    let (tx, rx) = mpsc::channel();
+
+    let f = Arc::new(f);
+
+    let start = Instant::now();
+
+    for _ in 1..number_of_threads {
+        let tx = tx.clone();
+
+        let f = f.clone();
+
+        thread::spawn(move || {
+            let mut measurers = {
+                let mut v = Vec::with_capacity(n);
+
+                for _ in 0..n {
+                    v.push(Measurer::default());
+                }
+
+                v
+            };
+
+            f(&mut measurers);
+
+            let mut measure_results = {
+                let mut v = Vec::with_capacity(n);
+
+                for measurer in measurers.iter_mut() {
+                    v.push(measurer.result.take().ok_or(BenchmarkError::MeasurerNotMeasured).unwrap());
+                }
+
+                v
+            };
+
+            loop {
+                f(&mut measurers);
+
+                for (i, measure_result) in measure_results.iter_mut().enumerate() {
+                    let measurer = &mut measurers[i];
+
+                    let result = measurer.result.take().ok_or(BenchmarkError::MeasurerNotMeasured).unwrap();
+
+                    measure_result.times += result.times;
+                    measure_result.total_elapsed += result.total_elapsed;
+
+                    measurer.seq += 1;
+                }
+
+                if start.elapsed() >= duration {
+                    break;
+                }
+            }
+
+            tx.send(measure_results).unwrap();
+        });
+    }
+
+
+    let mut measurers = {
+        let mut v = Vec::with_capacity(n);
+
+        for _ in 0..n {
+            v.push(Measurer::default());
+        }
+
+        v
+    };
+
+    f(&mut measurers);
+
+    let mut measure_results = {
+        let mut v = Vec::with_capacity(n);
+
+        for measurer in measurers.iter_mut() {
+            v.push(measurer.result.take().ok_or(BenchmarkError::MeasurerNotMeasured)?);
+        }
+
+        v
+    };
+
+    let start = Instant::now();
+
+    loop {
+        f(&mut measurers);
+
+        for (i, measure_result) in measure_results.iter_mut().enumerate() {
+            let measurer = &mut measurers[i];
+
+            let result = measurer.result.take().ok_or(BenchmarkError::MeasurerNotMeasured)?;
+
+            measure_result.times += result.times;
+            measure_result.total_elapsed += result.total_elapsed;
+
+            measurer.seq += 1;
+        }
+
+        if start.elapsed() >= duration {
+            break;
+        }
+    }
+
+    for _ in 1..number_of_threads {
+        let results = rx.recv().unwrap();
+
+        for (i, result) in results.into_iter().enumerate() {
+            let measure_result = &mut measure_results[i];
+
+            measure_result.times += result.times;
+            measure_result.total_elapsed += result.total_elapsed;
+        }
+
+        for measure_result in measure_results.iter_mut() {
+            measure_result.total_elapsed /= number_of_threads as u32;
+        }
+    }
+
+    Ok(measure_results)
+}
