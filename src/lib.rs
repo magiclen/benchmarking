@@ -180,22 +180,22 @@ pub fn warm_up_multi_thread_with_duration(thread_count: usize, duration: Duratio
 
 #[inline]
 /// Run a function 10 times and measure its execution time.
-pub fn measure_function<F>(f: F) -> Result<MeasureResult, BenchmarkError> where F: FnMut(&mut Measurer) + 'static {
+pub fn measure_function<F, O>(f: F) -> Result<MeasureResult, BenchmarkError> where F: FnMut(&mut Measurer) -> O + 'static {
     measure_function_with_times(DEFAULT_MEASURE_TIMES, f)
 }
 
 /// Run a function with a specific times and measure its execution time.
-pub fn measure_function_with_times<F>(times: u64, mut f: F) -> Result<MeasureResult, BenchmarkError> where F: FnMut(&mut Measurer) + 'static {
+pub fn measure_function_with_times<F, O>(times: u64, mut f: F) -> Result<MeasureResult, BenchmarkError> where F: FnMut(&mut Measurer) -> O + 'static {
     debug_assert!(times > 0);
 
     let mut measurer = Measurer::default();
 
-    f(&mut measurer);
+    let rtn = f(&mut measurer);
 
     let mut measure_result = measurer.result.take().ok_or(BenchmarkError::MeasurerNotMeasured)?;
 
     for _ in 1..times {
-        f(&mut measurer);
+        let rtn = f(&mut measurer);
 
         let result = measurer.result.take().ok_or(BenchmarkError::MeasurerNotMeasured)?;
 
@@ -203,29 +203,33 @@ pub fn measure_function_with_times<F>(times: u64, mut f: F) -> Result<MeasureRes
         measure_result.total_elapsed += result.total_elapsed;
 
         measurer.seq += 1;
+
+        drop(rtn);
     }
+
+    drop(rtn);
 
     Ok(measure_result)
 }
 
 #[inline]
 /// Run a function for 5 seconds and measure its execution time.
-pub fn bench_function<F>(f: F) -> Result<MeasureResult, BenchmarkError> where F: FnMut(&mut Measurer) + 'static {
+pub fn bench_function<F, O>(f: F) -> Result<MeasureResult, BenchmarkError> where F: FnMut(&mut Measurer) -> O + 'static {
     bench_function_with_duration(Duration::from_millis(DEFAULT_MEASURE_DURATION), f)
 }
 
 /// Run a function with a specific duration and measure its execution time.
-pub fn bench_function_with_duration<F>(duration: Duration, mut f: F) -> Result<MeasureResult, BenchmarkError> where F: FnMut(&mut Measurer) + 'static {
+pub fn bench_function_with_duration<F, O>(duration: Duration, mut f: F) -> Result<MeasureResult, BenchmarkError> where F: FnMut(&mut Measurer) -> O + 'static {
     let mut measurer = Measurer::default();
 
-    f(&mut measurer);
+    let rtn = f(&mut measurer);
 
     let mut measure_result = measurer.result.take().ok_or(BenchmarkError::MeasurerNotMeasured)?;
 
     let start = Instant::now();
 
     loop {
-        f(&mut measurer);
+        let rtn = f(&mut measurer);
 
         let result = measurer.result.take().ok_or(BenchmarkError::MeasurerNotMeasured)?;
 
@@ -237,19 +241,23 @@ pub fn bench_function_with_duration<F>(duration: Duration, mut f: F) -> Result<M
         }
 
         measurer.seq += 1;
+
+        drop(rtn);
     }
+
+    drop(rtn);
 
     Ok(measure_result)
 }
 
 #[inline]
 /// Run a function with a number of threads for 5 seconds and measure its execution time.
-pub fn multi_thread_bench_function<F>(number_of_threads: usize, f: F) -> Result<MeasureResult, BenchmarkError> where F: Fn(&mut Measurer) + Send + Sync + 'static {
+pub fn multi_thread_bench_function<F, O>(number_of_threads: usize, f: F) -> Result<MeasureResult, BenchmarkError> where F: Fn(&mut Measurer) -> O + Send + Sync + 'static {
     multi_thread_bench_function_with_duration(number_of_threads, Duration::from_millis(DEFAULT_MEASURE_DURATION), f)
 }
 
 /// Run a function with a number of threads and a specific duration and measure its execution time.
-pub fn multi_thread_bench_function_with_duration<F>(number_of_threads: usize, duration: Duration, f: F) -> Result<MeasureResult, BenchmarkError> where F: Fn(&mut Measurer) + Send + Sync + 'static {
+pub fn multi_thread_bench_function_with_duration<F, O>(number_of_threads: usize, duration: Duration, f: F) -> Result<MeasureResult, BenchmarkError> where F: Fn(&mut Measurer) -> O + Send + Sync + 'static {
     debug_assert!(number_of_threads > 0);
 
     let (tx, rx) = mpsc::channel();
@@ -266,12 +274,12 @@ pub fn multi_thread_bench_function_with_duration<F>(number_of_threads: usize, du
         thread::spawn(move || {
             let mut measurer = Measurer::default();
 
-            f(&mut measurer);
+            let rtn = f(&mut measurer);
 
             let mut measure_result = measurer.result.take().ok_or(BenchmarkError::MeasurerNotMeasured).unwrap();
 
             loop {
-                f(&mut measurer);
+                let rtn = f(&mut measurer);
 
                 let result = measurer.result.take().ok_or(BenchmarkError::MeasurerNotMeasured).unwrap();
 
@@ -283,7 +291,11 @@ pub fn multi_thread_bench_function_with_duration<F>(number_of_threads: usize, du
                 }
 
                 measurer.seq += 1;
+
+                drop(rtn);
             }
+
+            drop(rtn);
 
             tx.send(measure_result).unwrap();
         });
@@ -292,14 +304,14 @@ pub fn multi_thread_bench_function_with_duration<F>(number_of_threads: usize, du
 
     let mut measurer = Measurer::default();
 
-    f(&mut measurer);
+    let rtn = f(&mut measurer);
 
     let mut measure_result = measurer.result.take().ok_or(BenchmarkError::MeasurerNotMeasured)?;
 
     let start = Instant::now();
 
     loop {
-        f(&mut measurer);
+        let rtn = f(&mut measurer);
 
         let result = measurer.result.take().ok_or(BenchmarkError::MeasurerNotMeasured)?;
 
@@ -311,6 +323,8 @@ pub fn multi_thread_bench_function_with_duration<F>(number_of_threads: usize, du
         }
 
         measurer.seq += 1;
+
+        drop(rtn);
     }
 
     for _ in 1..number_of_threads {
@@ -322,6 +336,8 @@ pub fn multi_thread_bench_function_with_duration<F>(number_of_threads: usize, du
 
     measure_result.total_elapsed /= number_of_threads as u32;
 
+    drop(rtn);
+
     Ok(measure_result)
 }
 
@@ -329,12 +345,12 @@ pub fn multi_thread_bench_function_with_duration<F>(number_of_threads: usize, du
 
 #[inline]
 /// Run a function 10 times and measure its execution time.
-pub fn measure_function_n<F>(n: usize, f: F) -> Result<Vec<MeasureResult>, BenchmarkError> where F: FnMut(&mut [Measurer]) + 'static {
+pub fn measure_function_n<F, O>(n: usize, f: F) -> Result<Vec<MeasureResult>, BenchmarkError> where F: FnMut(&mut [Measurer]) -> O + 'static {
     measure_function_n_with_times(n, DEFAULT_MEASURE_TIMES, f)
 }
 
 /// Run a function with a specific times and measure its execution time.
-pub fn measure_function_n_with_times<F>(n: usize, times: u64, mut f: F) -> Result<Vec<MeasureResult>, BenchmarkError> where F: FnMut(&mut [Measurer]) + 'static {
+pub fn measure_function_n_with_times<F, O>(n: usize, times: u64, mut f: F) -> Result<Vec<MeasureResult>, BenchmarkError> where F: FnMut(&mut [Measurer]) -> O + 'static {
     debug_assert!(times > 0);
 
     let mut measurers = {
@@ -347,7 +363,7 @@ pub fn measure_function_n_with_times<F>(n: usize, times: u64, mut f: F) -> Resul
         v
     };
 
-    f(&mut measurers);
+    let rtn = f(&mut measurers);
 
     let mut measure_results = {
         let mut v = Vec::with_capacity(n);
@@ -360,7 +376,7 @@ pub fn measure_function_n_with_times<F>(n: usize, times: u64, mut f: F) -> Resul
     };
 
     for _ in 1..times {
-        f(&mut measurers);
+        let rtn = f(&mut measurers);
 
         for (i, measure_result) in measure_results.iter_mut().enumerate() {
             let measurer = &mut measurers[i];
@@ -372,19 +388,23 @@ pub fn measure_function_n_with_times<F>(n: usize, times: u64, mut f: F) -> Resul
 
             measurer.seq += 1;
         }
+
+        drop(rtn);
     }
+
+    drop(rtn);
 
     Ok(measure_results)
 }
 
 #[inline]
 /// Run a function for 5 seconds and measure its execution time.
-pub fn bench_function_n<F>(n: usize, f: F) -> Result<Vec<MeasureResult>, BenchmarkError> where F: FnMut(&mut [Measurer]) + 'static {
+pub fn bench_function_n<F, O>(n: usize, f: F) -> Result<Vec<MeasureResult>, BenchmarkError> where F: FnMut(&mut [Measurer]) -> O + 'static {
     bench_function_n_with_duration(n, Duration::from_millis(DEFAULT_MEASURE_DURATION), f)
 }
 
 /// Run a function with a specific duration and measure its execution time.
-pub fn bench_function_n_with_duration<F>(n: usize, duration: Duration, mut f: F) -> Result<Vec<MeasureResult>, BenchmarkError> where F: FnMut(&mut [Measurer]) + 'static {
+pub fn bench_function_n_with_duration<F, O>(n: usize, duration: Duration, mut f: F) -> Result<Vec<MeasureResult>, BenchmarkError> where F: FnMut(&mut [Measurer]) -> O + 'static {
     let mut measurers = {
         let mut v = Vec::with_capacity(n);
 
@@ -395,7 +415,7 @@ pub fn bench_function_n_with_duration<F>(n: usize, duration: Duration, mut f: F)
         v
     };
 
-    f(&mut measurers);
+    let rtn = f(&mut measurers);
 
     let mut measure_results = {
         let mut v = Vec::with_capacity(n);
@@ -410,7 +430,7 @@ pub fn bench_function_n_with_duration<F>(n: usize, duration: Duration, mut f: F)
     let start = Instant::now();
 
     loop {
-        f(&mut measurers);
+        let rtn = f(&mut measurers);
 
         for (i, measure_result) in measure_results.iter_mut().enumerate() {
             let measurer = &mut measurers[i];
@@ -426,19 +446,23 @@ pub fn bench_function_n_with_duration<F>(n: usize, duration: Duration, mut f: F)
         if start.elapsed() >= duration {
             break;
         }
+
+        drop(rtn);
     }
+
+    drop(rtn);
 
     Ok(measure_results)
 }
 
 #[inline]
 /// Run a function with a number of threads for 5 seconds and measure its execution time.
-pub fn multi_thread_bench_function_n<F>(n: usize, number_of_threads: usize, f: F) -> Result<Vec<MeasureResult>, BenchmarkError> where F: Fn(&mut [Measurer]) + Send + Sync + 'static {
+pub fn multi_thread_bench_function_n<F, O>(n: usize, number_of_threads: usize, f: F) -> Result<Vec<MeasureResult>, BenchmarkError> where F: Fn(&mut [Measurer]) -> O + Send + Sync + 'static {
     multi_thread_bench_function_n_with_duration(n, number_of_threads, Duration::from_millis(DEFAULT_MEASURE_DURATION), f)
 }
 
 /// Run a function with a number of threads and a specific duration and measure its execution time.
-pub fn multi_thread_bench_function_n_with_duration<F>(n: usize, number_of_threads: usize, duration: Duration, f: F) -> Result<Vec<MeasureResult>, BenchmarkError> where F: Fn(&mut [Measurer]) + Send + Sync + 'static {
+pub fn multi_thread_bench_function_n_with_duration<F, O>(n: usize, number_of_threads: usize, duration: Duration, f: F) -> Result<Vec<MeasureResult>, BenchmarkError> where F: Fn(&mut [Measurer]) -> O + Send + Sync + 'static {
     debug_assert!(number_of_threads > 0);
 
     let (tx, rx) = mpsc::channel();
@@ -463,7 +487,7 @@ pub fn multi_thread_bench_function_n_with_duration<F>(n: usize, number_of_thread
                 v
             };
 
-            f(&mut measurers);
+            let rtn = f(&mut measurers);
 
             let mut measure_results = {
                 let mut v = Vec::with_capacity(n);
@@ -476,7 +500,7 @@ pub fn multi_thread_bench_function_n_with_duration<F>(n: usize, number_of_thread
             };
 
             loop {
-                f(&mut measurers);
+                let rtn = f(&mut measurers);
 
                 for (i, measure_result) in measure_results.iter_mut().enumerate() {
                     let measurer = &mut measurers[i];
@@ -492,7 +516,11 @@ pub fn multi_thread_bench_function_n_with_duration<F>(n: usize, number_of_thread
                 if start.elapsed() >= duration {
                     break;
                 }
+
+                drop(rtn);
             }
+
+            drop(rtn);
 
             tx.send(measure_results).unwrap();
         });
@@ -509,7 +537,7 @@ pub fn multi_thread_bench_function_n_with_duration<F>(n: usize, number_of_thread
         v
     };
 
-    f(&mut measurers);
+    let rtn = f(&mut measurers);
 
     let mut measure_results = {
         let mut v = Vec::with_capacity(n);
@@ -524,7 +552,7 @@ pub fn multi_thread_bench_function_n_with_duration<F>(n: usize, number_of_thread
     let start = Instant::now();
 
     loop {
-        f(&mut measurers);
+        let rtn = f(&mut measurers);
 
         for (i, measure_result) in measure_results.iter_mut().enumerate() {
             let measurer = &mut measurers[i];
@@ -540,6 +568,8 @@ pub fn multi_thread_bench_function_n_with_duration<F>(n: usize, number_of_thread
         if start.elapsed() >= duration {
             break;
         }
+
+        drop(rtn);
     }
 
     for _ in 1..number_of_threads {
@@ -556,6 +586,8 @@ pub fn multi_thread_bench_function_n_with_duration<F>(n: usize, number_of_thread
             measure_result.total_elapsed /= number_of_threads as u32;
         }
     }
+
+    drop(rtn);
 
     Ok(measure_results)
 }
