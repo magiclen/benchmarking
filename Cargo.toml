@@ -1,7 +1,8 @@
 [package]
 name = "benchmarking"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Magic Len <len@magiclen.org>"]
+edition = "2018"
 homepage = "https://magiclen.org/benchmarking"
 keywords = ["benchmark", "bench", "execution", "time"]
 description= "This crate can be used to execute something and measure the execution time. It does not output anything to screens and filesystems."
