@@ -8,14 +8,18 @@ fn main() {
     let bench_result = benchmarking::bench_function(|measurer| {
         let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
 
-        measurer.measure(|| {
-            for i in 0..VEC_LENGTH {
-                vec.push(i);
-            }
-        });
+        unsafe {
+            vec.set_len(VEC_LENGTH);
+        }
+
+        for i in 0..VEC_LENGTH {
+            measurer.measure(|| {
+                vec[i]
+            });
+        }
 
         vec
     }).unwrap();
 
-    println!("Filling 0 to 99 into a vec takes {:?}!", bench_result.elapsed());
+    println!("Reading a number from a vec takes {:?}!", bench_result.elapsed());
 }

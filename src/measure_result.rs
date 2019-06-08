@@ -19,6 +19,14 @@ impl MeasureResult {
     }
 
     #[inline]
+    pub(crate) fn empty() -> MeasureResult {
+        MeasureResult {
+            times: 0,
+            total_elapsed: Duration::from_secs(0),
+        }
+    }
+
+    #[inline]
     /// Determine how long does an iteration take on average.
     pub fn elapsed(&self) -> Duration {
         let nano_secs = self.total_elapsed.as_nanos() / self.times;

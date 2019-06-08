@@ -8,17 +8,13 @@ fn main() {
     let bench_result = benchmarking::bench_function(|measurer| {
         let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
 
-        measurer.measure_for_loop(0..VEC_LENGTH, |_, loop_seq| {
-            vec.push(loop_seq);
-        });
-
-        /*
-            for i in 0...VEC_LENGTH {
-                // Start the measurement
+        for i in 0..VEC_LENGTH {
+            measurer.measure(|| {
                 vec.push(i);
-                // End the measurement
-            }
-        */
+            });
+        }
+
+        vec
     }).unwrap();
 
     println!("Pushing a number into a vec takes {:?}!", bench_result.elapsed());
