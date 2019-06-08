@@ -89,6 +89,8 @@ mod measurer;
 use std::time::{Duration, Instant};
 use std::sync::{mpsc, atomic::{Ordering, AtomicBool}, Arc};
 use std::thread;
+use std::ptr::read_volatile;
+use std::mem::forget;
 
 pub use measure_result::MeasureResult;
 pub use measurer::{Measurer, MeasureLoopResult};
@@ -168,7 +170,7 @@ pub fn measure_function_with_times<F, O>(times: u64, mut f: F) -> Result<Measure
 
     let mut measurer = Measurer::default();
 
-    let rtn = f(&mut measurer);
+    black_box(f(&mut measurer));
 
     let mut measure_result = if measurer.pass {
         measurer.pass = false;
@@ -180,7 +182,7 @@ pub fn measure_function_with_times<F, O>(times: u64, mut f: F) -> Result<Measure
     };
 
     for _ in 1..times {
-        let rtn = f(&mut measurer);
+        black_box(f(&mut measurer));
 
         if measurer.pass {
             measurer.pass = false;
@@ -193,11 +195,7 @@ pub fn measure_function_with_times<F, O>(times: u64, mut f: F) -> Result<Measure
         }
 
         measurer.seq += 1;
-
-        drop(rtn);
     }
-
-    drop(rtn);
 
     Ok(measure_result)
 }
@@ -212,7 +210,7 @@ pub fn bench_function<F, O>(f: F) -> Result<MeasureResult, BenchmarkError> where
 pub fn bench_function_with_duration<F, O>(duration: Duration, mut f: F) -> Result<MeasureResult, BenchmarkError> where F: FnMut(&mut Measurer) -> O + 'static {
     let mut measurer = Measurer::default();
 
-    let rtn = f(&mut measurer);
+    black_box(f(&mut measurer));
 
     let mut measure_result = if measurer.pass {
         measurer.pass = false;
@@ -226,7 +224,7 @@ pub fn bench_function_with_duration<F, O>(duration: Duration, mut f: F) -> Resul
     let start = Instant::now();
 
     loop {
-        let rtn = f(&mut measurer);
+        black_box(f(&mut measurer));
 
         if measurer.pass {
             measurer.pass = false;
@@ -243,11 +241,7 @@ pub fn bench_function_with_duration<F, O>(duration: Duration, mut f: F) -> Resul
         }
 
         measurer.seq += 1;
-
-        drop(rtn);
     }
-
-    drop(rtn);
 
     Ok(measure_result)
 }
@@ -276,7 +270,7 @@ pub fn multi_thread_bench_function_with_duration<F, O>(number_of_threads: usize,
         thread::spawn(move || {
             let mut measurer = Measurer::default();
 
-            let rtn = f(&mut measurer);
+            black_box(f(&mut measurer));
 
             let mut measure_result = if measurer.pass {
                 measurer.pass = false;
@@ -288,7 +282,7 @@ pub fn multi_thread_bench_function_with_duration<F, O>(number_of_threads: usize,
             };
 
             loop {
-                let rtn = f(&mut measurer);
+                black_box(f(&mut measurer));
 
                 if measurer.pass {
                     measurer.pass = false;
@@ -305,11 +299,7 @@ pub fn multi_thread_bench_function_with_duration<F, O>(number_of_threads: usize,
                 }
 
                 measurer.seq += 1;
-
-                drop(rtn);
             }
-
-            drop(rtn);
 
             tx.send(measure_result).unwrap();
         });
@@ -318,7 +308,7 @@ pub fn multi_thread_bench_function_with_duration<F, O>(number_of_threads: usize,
 
     let mut measurer = Measurer::default();
 
-    let rtn = f(&mut measurer);
+    black_box(f(&mut measurer));
 
     let mut measure_result = if measurer.pass {
         measurer.pass = false;
@@ -332,7 +322,7 @@ pub fn multi_thread_bench_function_with_duration<F, O>(number_of_threads: usize,
     let start = Instant::now();
 
     loop {
-        let rtn = f(&mut measurer);
+        black_box(f(&mut measurer));
 
         if measurer.pass {
             measurer.pass = false;
@@ -349,8 +339,6 @@ pub fn multi_thread_bench_function_with_duration<F, O>(number_of_threads: usize,
         }
 
         measurer.seq += 1;
-
-        drop(rtn);
     }
 
     for _ in 1..number_of_threads {
@@ -361,8 +349,6 @@ pub fn multi_thread_bench_function_with_duration<F, O>(number_of_threads: usize,
     }
 
     measure_result.total_elapsed /= number_of_threads as u32;
-
-    drop(rtn);
 
     Ok(measure_result)
 }
@@ -389,7 +375,7 @@ pub fn measure_function_n_with_times<F, O>(n: usize, times: u64, mut f: F) -> Re
         v
     };
 
-    let rtn = f(&mut measurers);
+    black_box(f(&mut measurers));
 
     let mut measure_results = {
         let mut v = Vec::with_capacity(n);
@@ -411,7 +397,7 @@ pub fn measure_function_n_with_times<F, O>(n: usize, times: u64, mut f: F) -> Re
     };
 
     for _ in 1..times {
-        let rtn = f(&mut measurers);
+        black_box(f(&mut measurers));
 
         for (i, measure_result) in measure_results.iter_mut().enumerate() {
             let measurer = &mut measurers[i];
@@ -428,11 +414,7 @@ pub fn measure_function_n_with_times<F, O>(n: usize, times: u64, mut f: F) -> Re
 
             measurer.seq += 1;
         }
-
-        drop(rtn);
     }
-
-    drop(rtn);
 
     Ok(measure_results)
 }
@@ -455,7 +437,7 @@ pub fn bench_function_n_with_duration<F, O>(n: usize, duration: Duration, mut f:
         v
     };
 
-    let rtn = f(&mut measurers);
+    black_box(f(&mut measurers));
 
     let mut measure_results = {
         let mut v = Vec::with_capacity(n);
@@ -479,7 +461,7 @@ pub fn bench_function_n_with_duration<F, O>(n: usize, duration: Duration, mut f:
     let start = Instant::now();
 
     loop {
-        let rtn = f(&mut measurers);
+        black_box(f(&mut measurers));
 
         for (i, measure_result) in measure_results.iter_mut().enumerate() {
             let measurer = &mut measurers[i];
@@ -500,11 +482,7 @@ pub fn bench_function_n_with_duration<F, O>(n: usize, duration: Duration, mut f:
         if start.elapsed() >= duration {
             break;
         }
-
-        drop(rtn);
     }
-
-    drop(rtn);
 
     Ok(measure_results)
 }
@@ -541,7 +519,7 @@ pub fn multi_thread_bench_function_n_with_duration<F, O>(n: usize, number_of_thr
                 v
             };
 
-            let rtn = f(&mut measurers);
+            black_box(f(&mut measurers));
 
             let mut measure_results = {
                 let mut v = Vec::with_capacity(n);
@@ -563,7 +541,7 @@ pub fn multi_thread_bench_function_n_with_duration<F, O>(n: usize, number_of_thr
             };
 
             loop {
-                let rtn = f(&mut measurers);
+                black_box(f(&mut measurers));
 
                 for (i, measure_result) in measure_results.iter_mut().enumerate() {
                     let measurer = &mut measurers[i];
@@ -584,11 +562,7 @@ pub fn multi_thread_bench_function_n_with_duration<F, O>(n: usize, number_of_thr
                 if start.elapsed() >= duration {
                     break;
                 }
-
-                drop(rtn);
             }
-
-            drop(rtn);
 
             tx.send(measure_results).unwrap();
         });
@@ -605,7 +579,7 @@ pub fn multi_thread_bench_function_n_with_duration<F, O>(n: usize, number_of_thr
         v
     };
 
-    let rtn = f(&mut measurers);
+    black_box(f(&mut measurers));
 
     let mut measure_results = {
         let mut v = Vec::with_capacity(n);
@@ -629,7 +603,7 @@ pub fn multi_thread_bench_function_n_with_duration<F, O>(n: usize, number_of_thr
     let start = Instant::now();
 
     loop {
-        let rtn = f(&mut measurers);
+        black_box(f(&mut measurers));
 
         for (i, measure_result) in measure_results.iter_mut().enumerate() {
             let measurer = &mut measurers[i];
@@ -650,8 +624,6 @@ pub fn multi_thread_bench_function_n_with_duration<F, O>(n: usize, number_of_thr
         if start.elapsed() >= duration {
             break;
         }
-
-        drop(rtn);
     }
 
     for _ in 1..number_of_threads {
@@ -669,7 +641,13 @@ pub fn multi_thread_bench_function_n_with_duration<F, O>(n: usize, number_of_thr
         }
     }
 
-    drop(rtn);
-
     Ok(measure_results)
+}
+
+pub(crate) fn black_box<T>(dummy: T) -> T {
+    unsafe {
+        let ret = read_volatile(&dummy);
+        forget(dummy);
+        ret
+    }
 }

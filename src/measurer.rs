@@ -1,6 +1,6 @@
 use std::time::{Duration, Instant};
 
-use crate::MeasureResult;
+use crate::{MeasureResult, black_box};
 
 #[derive(Debug, Clone)]
 /// To control whether to continue running the loop.
@@ -68,11 +68,9 @@ impl Measurer {
     pub fn measure<M, K>(&mut self, f: M) where M: FnOnce() -> K {
         let start = Instant::now();
 
-        let rtn = f();
+        black_box(f());
 
         self.update(start.elapsed());
-
-        drop(rtn);
     }
 
     #[inline]
