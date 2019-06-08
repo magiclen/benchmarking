@@ -85,7 +85,7 @@ const VEC_LENGTH: usize = 100;
 
 benchmarking::warm_up();
 
-let bench_result = benchmarking::bench_function_n(2, |measurers| {
+let bench_result = benchmarking::measure_function_n(2, |measurers| {
     let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
 
     for i in 0..VEC_LENGTH {
