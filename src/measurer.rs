@@ -2,20 +2,6 @@ use std::time::{Duration, Instant};
 
 use crate::{MeasureResult, black_box};
 
-#[derive(Debug, Clone)]
-/// To control whether to continue running the loop.
-pub enum MeasureLoopResult<K> {
-    Continue,
-    Break(K),
-}
-
-impl From<()> for MeasureLoopResult<()> {
-    #[inline]
-    fn from(_: ()) -> MeasureLoopResult<()> {
-        MeasureLoopResult::Continue
-    }
-}
-
 #[derive(Debug, Default)]
 /// To measure the execution time.
 pub struct Measurer {

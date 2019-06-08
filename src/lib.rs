@@ -93,7 +93,7 @@ use std::ptr::read_volatile;
 use std::mem::forget;
 
 pub use measure_result::MeasureResult;
-pub use measurer::{Measurer, MeasureLoopResult};
+pub use measurer::Measurer;
 
 const DEFAULT_MEASURE_TIMES: u64 = 10;
 const DEFAULT_MEASURE_DURATION: u64 = 5000;
