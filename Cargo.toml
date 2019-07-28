@@ -1,6 +1,6 @@
 [package]
 name = "benchmarking"
-version = "0.4.3"
+version = "0.4.4"
 authors = ["Magic Len <len@magiclen.org>"]
 edition = "2018"
 homepage = "https://magiclen.org/benchmarking"
@@ -11,6 +11,6 @@ license = "MIT"
 
 [badges.travis-ci]
 repository = "magiclen/benchmarking"
- branch = "master"
+branch = "master"
 
 [dependencies]
