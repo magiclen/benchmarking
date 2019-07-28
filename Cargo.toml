@@ -9,8 +9,8 @@ description= "This crate can be used to execute something and measure the execut
 readme = "README.md"
 license = "MIT"
 
-[badges]
-travis-ci = { repository = "magiclen/benchmarking", branch = "master" }
-appveyor = { repository = "magiclen/benchmarking", branch = "master", service = "github" }
+[badges.travis-ci]
+repository = "magiclen/benchmarking"
+ branch = "master"
 
 [dependencies]
