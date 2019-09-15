@@ -1,6 +1,6 @@
 use std::time::{Duration, Instant};
 
-use crate::{MeasureResult, black_box};
+use crate::{black_box, MeasureResult};
 
 #[derive(Debug, Default)]
 /// To measure the execution time.
@@ -51,7 +51,9 @@ impl Measurer {
 
     #[inline]
     /// Measure a function by executing it once.
-    pub fn measure<M, K>(&mut self, f: M) where M: FnOnce() -> K {
+    pub fn measure<M, K>(&mut self, f: M)
+    where
+        M: FnOnce() -> K, {
         let start = Instant::now();
 
         black_box(f());

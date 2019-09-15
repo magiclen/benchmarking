@@ -15,13 +15,12 @@ fn main() {
         }
 
         for i in 0..VEC_LENGTH {
-            measurers[0].measure(|| {
-                vec[i]
-            });
+            measurers[0].measure(|| vec[i]);
         }
 
         vec
-    }).unwrap();
+    })
+    .unwrap();
 
     println!("Reading a number from a vec takes {:?}!", bench_result[0].elapsed());
     println!("Pushing a number into a vec takes {:?}!", bench_result[1].elapsed());

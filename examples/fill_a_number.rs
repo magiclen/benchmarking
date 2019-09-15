@@ -15,7 +15,8 @@ fn main() {
         }
 
         vec
-    }).unwrap();
+    })
+    .unwrap();
 
     println!("Pushing a number into a vec takes {:?}!", bench_result.elapsed());
 }

@@ -31,9 +31,9 @@ impl MeasureResult {
     pub fn elapsed(&self) -> Duration {
         let nano_secs = self.total_elapsed.as_nanos() / self.times;
 
-        let secs = (nano_secs / 1000000000) as u64;
+        let secs = (nano_secs / 1_000_000_000) as u64;
 
-        let nano_secs = (nano_secs % 1000000000) as u32;
+        let nano_secs = (nano_secs % 1_000_000_000) as u32;
 
         Duration::new(secs, nano_secs)
     }
@@ -41,7 +41,7 @@ impl MeasureResult {
     #[inline]
     /// Determine how many iterations can be executed within one second.
     pub fn speed(&self) -> f64 {
-        (self.times as f64 / self.total_elapsed.as_nanos() as f64) * 1000000000.0
+        (self.times as f64 / self.total_elapsed.as_nanos() as f64) * 1_000_000_000.0
     }
 
     #[inline]

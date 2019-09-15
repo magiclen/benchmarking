@@ -15,7 +15,8 @@ fn main() {
         });
 
         vec
-    }).unwrap();
+    })
+    .unwrap();
 
     println!("Filling 0 to 99 into a vec takes {:?}!", bench_result.elapsed());
 }

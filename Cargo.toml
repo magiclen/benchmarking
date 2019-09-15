@@ -1,11 +1,13 @@
 [package]
 name = "benchmarking"
-version = "0.4.4"
+version = "0.4.5"
 authors = ["Magic Len <len@magiclen.org>"]
 edition = "2018"
+repository = "https://github.com/magiclen/benchmarking"
 homepage = "https://magiclen.org/benchmarking"
 keywords = ["benchmark", "bench", "execution", "time"]
-description= "This crate can be used to execute something and measure the execution time. It does not output anything to screens and filesystems."
+categories = ["development-tools::profiling"]
+description = "This crate can be used to execute something and measure the execution time. It does not output anything to screens and filesystems."
 readme = "README.md"
 license = "MIT"
 
