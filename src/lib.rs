@@ -106,11 +106,12 @@
 //! The `warm_up` and `warm_up_with_duration` functions of the `benchmarking` crate runs on one thread. To warm up all CPUs, you can use the `warm_up_multi_thread` and `warm_up_multi_thread_with_duration` functions instead.
 //! The `measure_function` and `measure_function_with_times` functions of the `benchmarking` crate can execute a closure for N times. To execute it repeatly for a while instead, you can use the `bench_function` and `bench_function_with_duration` functions.
 //! To execute a closure with multiple threads to measure the throughput, you can use the `multi_thread_bench_function` and `multi_thread_bench_function_with_duration` functions of the `benchmarking` crate.
-//!
 
 mod measure_result;
 mod measurer;
 
+use std::error::Error;
+use std::fmt::{Display, Error as FmtError, Formatter};
 use std::mem::forget;
 use std::ptr::read_volatile;
 use std::sync::{
@@ -131,6 +132,15 @@ const DEFAULT_WARM_UP_DURATION: u64 = 3000;
 pub enum BenchmarkError {
     MeasurerNotMeasured,
 }
+
+impl Display for BenchmarkError {
+    #[inline]
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), FmtError> {
+        f.write_str("The measurer has not measured yet.")
+    }
+}
+
+impl Error for BenchmarkError {}
 
 #[inline]
 /// To stimulate CPU to wake up. The running duration is `3` seconds.
