@@ -5,7 +5,7 @@
 //! ## Examples
 //!
 //! ```rust
-//! extern crate benchmarking;
+//! use benchmarking;
 //!
 //! const VEC_LENGTH: usize = 100;
 //!
@@ -30,7 +30,7 @@
 //! ```
 //!
 //! ```rust
-//! extern crate benchmarking;
+//! use benchmarking;
 //!
 //! const VEC_LENGTH: usize = 100;
 //!
@@ -53,7 +53,7 @@
 //! ```
 //!
 //! ```rust
-//! extern crate benchmarking;
+//! use benchmarking;
 //!
 //! const VEC_LENGTH: usize = 100;
 //!
@@ -76,7 +76,7 @@
 //! ```
 //!
 //! ```rust
-//! extern crate benchmarking;
+//! use benchmarking;
 //!
 //! const VEC_LENGTH: usize = 100;
 //!
