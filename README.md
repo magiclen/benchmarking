@@ -1,7 +1,7 @@
 Benchmarking
 ====================
 
-[![Build Status](https://travis-ci.org/magiclen/benchmarking.svg?branch=master)](https://travis-ci.org/magiclen/benchmarking)
+[![CI](https://github.com/magiclen/benchmarking/actions/workflows/ci.yml/badge.svg)](https://github.com/magiclen/benchmarking/actions/workflows/ci.yml)
 
 This crate can be used to execute something and measure the execution time. It does not output anything to screens and filesystems.
 

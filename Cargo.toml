@@ -1,6 +1,6 @@
 [package]
 name = "benchmarking"
-version = "0.4.9"
+version = "0.4.10"
 authors = ["Magic Len <len@magiclen.org>"]
 edition = "2018"
 repository = "https://github.com/magiclen/benchmarking"
@@ -11,9 +11,5 @@ description = "This crate can be used to execute something and measure the execu
 readme = "README.md"
 license = "MIT"
 include = ["src/**/*", "Cargo.toml", "README.md", "LICENSE"]
-
-[badges.travis-ci]
-repository = "magiclen/benchmarking"
-branch = "master"
 
 [dependencies]
