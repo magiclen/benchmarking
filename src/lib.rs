@@ -5,13 +5,13 @@
 //! ## Examples
 //!
 //! ```rust
-//! extern crate benchmarking;
+//! use benchmarking;
 //!
 //! const VEC_LENGTH: usize = 100;
 //!
 //! benchmarking::warm_up();
 //!
-//! let bench_result = benchmarking::measure_function(|measurer| {
+//! let bench_result = benchmarking::bench_function(|measurer| {
 //!     let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
 //!
 //!     unsafe {
@@ -30,13 +30,13 @@
 //! ```
 //!
 //! ```rust
-//! extern crate benchmarking;
+//! use benchmarking;
 //!
 //! const VEC_LENGTH: usize = 100;
 //!
 //! benchmarking::warm_up();
 //!
-//! let bench_result = benchmarking::measure_function(|measurer| {
+//! let bench_result = benchmarking::bench_function(|measurer| {
 //!     let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
 //!
 //!     measurer.measure(|| {
@@ -53,18 +53,18 @@
 //! ```
 //!
 //! ```rust
-//! extern crate benchmarking;
+//! use benchmarking;
 //!
 //! const VEC_LENGTH: usize = 100;
 //!
 //! benchmarking::warm_up();
 //!
-//! let bench_result = benchmarking::measure_function(|measurer| {
+//! let bench_result = benchmarking::bench_function(|measurer| {
 //!     let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
 //!
-//!     for loop_seq in 0..VEC_LENGTH {
+//!     for i in 0..VEC_LENGTH {
 //!         measurer.measure(|| {
-//!             vec.push(loop_seq);
+//!             vec.push(i);
 //!         });
 //!     }
 //!
@@ -76,13 +76,13 @@
 //! ```
 //!
 //! ```rust
-//! extern crate benchmarking;
+//! use benchmarking;
 //!
 //! const VEC_LENGTH: usize = 100;
 //!
 //! benchmarking::warm_up();
 //!
-//! let bench_result = benchmarking::measure_function_n(2, |measurers| {
+//! let bench_result = benchmarking::bench_function_n(2, |measurers| {
 //!     let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
 //!
 //!     for i in 0..VEC_LENGTH {

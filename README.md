@@ -8,13 +8,13 @@ This crate can be used to execute something and measure the execution time. It d
 ## Examples
 
 ```rust
-extern crate benchmarking;
+use benchmarking;
 
 const VEC_LENGTH: usize = 100;
 
 benchmarking::warm_up();
 
-let bench_result = benchmarking::measure_function(|measurer| {
+let bench_result = benchmarking::bench_function(|measurer| {
     let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
 
     unsafe {
@@ -22,25 +22,24 @@ let bench_result = benchmarking::measure_function(|measurer| {
     }
 
     for i in 0..VEC_LENGTH {
-        measurer.measure(|| {
-            vec[i]
-        });
+        measurer.measure(|| vec[i]);
     }
 
     vec
-}).unwrap();
+})
+.unwrap();
 
 println!("Reading a number from a vec takes {:?}!", bench_result.elapsed());
 ```
 
 ```rust
-extern crate benchmarking;
+use benchmarking;
 
 const VEC_LENGTH: usize = 100;
 
 benchmarking::warm_up();
 
-let bench_result = benchmarking::measure_function(|measurer| {
+let bench_result = benchmarking::bench_function(|measurer| {
     let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
 
     measurer.measure(|| {
@@ -50,41 +49,43 @@ let bench_result = benchmarking::measure_function(|measurer| {
     });
 
     vec
-}).unwrap();
+})
+.unwrap();
 
 println!("Filling 0 to 99 into a vec takes {:?}!", bench_result.elapsed());
 ```
 
 ```rust
-extern crate benchmarking;
+use benchmarking;
 
 const VEC_LENGTH: usize = 100;
 
 benchmarking::warm_up();
 
-let bench_result = benchmarking::measure_function(|measurer| {
+let bench_result = benchmarking::bench_function(|measurer| {
     let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
 
-    for loop_seq in 0..VEC_LENGTH {
+    for i in 0..VEC_LENGTH {
         measurer.measure(|| {
-            vec.push(loop_seq);
+            vec.push(i);
         });
     }
 
     vec
-}).unwrap();
+})
+.unwrap();
 
 println!("Pushing a number into a vec takes {:?}!", bench_result.elapsed());
 ```
 
 ```rust
-extern crate benchmarking;
+use benchmarking;
 
 const VEC_LENGTH: usize = 100;
 
 benchmarking::warm_up();
 
-let bench_result = benchmarking::measure_function_n(2, |measurers| {
+let bench_result = benchmarking::bench_function_n(2, |measurers| {
     let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
 
     for i in 0..VEC_LENGTH {
@@ -94,13 +95,12 @@ let bench_result = benchmarking::measure_function_n(2, |measurers| {
     }
 
     for i in 0..VEC_LENGTH {
-        measurers[0].measure(|| {
-            vec[i]
-        });
+        measurers[0].measure(|| vec[i]);
     }
 
     vec
-}).unwrap();
+})
+.unwrap();
 
 println!("Reading a number from a vec takes {:?}!", bench_result[0].elapsed());
 println!("Pushing a number into a vec takes {:?}!", bench_result[1].elapsed());
