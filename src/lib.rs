@@ -5,8 +5,6 @@
 //! ## Examples
 //!
 //! ```rust
-//! extern crate benchmarking;
-//!
 //! const VEC_LENGTH: usize = 100;
 //!
 //! benchmarking::warm_up();
@@ -30,8 +28,6 @@
 //! ```
 //!
 //! ```rust
-//! extern crate benchmarking;
-//!
 //! const VEC_LENGTH: usize = 100;
 //!
 //! benchmarking::warm_up();
@@ -53,8 +49,6 @@
 //! ```
 //!
 //! ```rust
-//! extern crate benchmarking;
-//!
 //! const VEC_LENGTH: usize = 100;
 //!
 //! benchmarking::warm_up();
@@ -76,8 +70,6 @@
 //! ```
 //!
 //! ```rust
-//! extern crate benchmarking;
-//!
 //! const VEC_LENGTH: usize = 100;
 //!
 //! benchmarking::warm_up();

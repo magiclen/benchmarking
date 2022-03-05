@@ -1,5 +1,3 @@
-extern crate benchmarking;
-
 fn main() {
     const VEC_LENGTH: usize = 100;
 
@@ -14,8 +12,8 @@ fn main() {
             });
         }
 
-        for i in 0..VEC_LENGTH {
-            measurers[0].measure(|| vec[i]);
+        for e in vec.iter().cloned() {
+            measurers[0].measure(|| e);
         }
 
         vec

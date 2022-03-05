@@ -8,8 +8,6 @@ This crate can be used to execute something and measure the execution time. It d
 ## Examples
 
 ```rust
-extern crate benchmarking;
-
 const VEC_LENGTH: usize = 100;
 
 benchmarking::warm_up();
@@ -34,8 +32,6 @@ println!("Reading a number from a vec takes {:?}!", bench_result.elapsed());
 ```
 
 ```rust
-extern crate benchmarking;
-
 const VEC_LENGTH: usize = 100;
 
 benchmarking::warm_up();
@@ -56,8 +52,6 @@ println!("Filling 0 to 99 into a vec takes {:?}!", bench_result.elapsed());
 ```
 
 ```rust
-extern crate benchmarking;
-
 const VEC_LENGTH: usize = 100;
 
 benchmarking::warm_up();
@@ -78,8 +72,6 @@ println!("Pushing a number into a vec takes {:?}!", bench_result.elapsed());
 ```
 
 ```rust
-extern crate benchmarking;
-
 const VEC_LENGTH: usize = 100;
 
 benchmarking::warm_up();

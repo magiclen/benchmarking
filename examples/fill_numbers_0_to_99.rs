@@ -1,5 +1,3 @@
-extern crate benchmarking;
-
 fn main() {
     const VEC_LENGTH: usize = 100;
 
