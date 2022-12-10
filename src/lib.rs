@@ -195,7 +195,7 @@ pub fn warm_up_multi_thread_with_duration(thread_count: usize, duration: Duratio
 /// Run a function 10 times and measure its execution time.
 pub fn measure_function<F, O>(f: F) -> Result<MeasureResult, BenchmarkError>
 where
-    F: FnMut(&mut Measurer) -> O + 'static, {
+    F: FnMut(&mut Measurer) -> O {
     measure_function_with_times(DEFAULT_MEASURE_TIMES, f)
 }
 
@@ -205,7 +205,7 @@ pub fn measure_function_with_times<F, O>(
     mut f: F,
 ) -> Result<MeasureResult, BenchmarkError>
 where
-    F: FnMut(&mut Measurer) -> O + 'static, {
+    F: FnMut(&mut Measurer) -> O, {
     debug_assert!(times > 0);
 
     let mut measurer = Measurer::default();
@@ -244,7 +244,7 @@ where
 /// Run a function for 5 seconds and measure its execution time.
 pub fn bench_function<F, O>(f: F) -> Result<MeasureResult, BenchmarkError>
 where
-    F: FnMut(&mut Measurer) -> O + 'static, {
+    F: FnMut(&mut Measurer) -> O, {
     bench_function_with_duration(Duration::from_millis(DEFAULT_MEASURE_DURATION), f)
 }
 
@@ -254,7 +254,7 @@ pub fn bench_function_with_duration<F, O>(
     mut f: F,
 ) -> Result<MeasureResult, BenchmarkError>
 where
-    F: FnMut(&mut Measurer) -> O + 'static, {
+    F: FnMut(&mut Measurer) -> O, {
     let mut measurer = Measurer::default();
 
     black_box(f(&mut measurer));
