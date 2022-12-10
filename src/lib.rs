@@ -195,7 +195,7 @@ pub fn warm_up_multi_thread_with_duration(thread_count: usize, duration: Duratio
 /// Run a function 10 times and measure its execution time.
 pub fn measure_function<F, O>(f: F) -> Result<MeasureResult, BenchmarkError>
 where
-    F: FnMut(&mut Measurer) -> O {
+    F: FnMut(&mut Measurer) -> O, {
     measure_function_with_times(DEFAULT_MEASURE_TIMES, f)
 }
 
