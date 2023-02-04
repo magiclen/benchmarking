@@ -421,7 +421,7 @@ where
 /// Run a function 10 times and measure its execution time.
 pub fn measure_function_n<F, O>(n: usize, f: F) -> Result<Vec<MeasureResult>, BenchmarkError>
 where
-    F: FnMut(&mut [Measurer]) -> O + 'static, {
+    F: FnMut(&mut [Measurer]) -> O, {
     measure_function_n_with_times(n, DEFAULT_MEASURE_TIMES, f)
 }
 
@@ -432,7 +432,7 @@ pub fn measure_function_n_with_times<F, O>(
     mut f: F,
 ) -> Result<Vec<MeasureResult>, BenchmarkError>
 where
-    F: FnMut(&mut [Measurer]) -> O + 'static, {
+    F: FnMut(&mut [Measurer]) -> O, {
     debug_assert!(times > 0);
 
     let mut measurers = {
@@ -493,7 +493,7 @@ where
 /// Run a function for 5 seconds and measure its execution time.
 pub fn bench_function_n<F, O>(n: usize, f: F) -> Result<Vec<MeasureResult>, BenchmarkError>
 where
-    F: FnMut(&mut [Measurer]) -> O + 'static, {
+    F: FnMut(&mut [Measurer]) -> O, {
     bench_function_n_with_duration(n, Duration::from_millis(DEFAULT_MEASURE_DURATION), f)
 }
 
@@ -504,7 +504,7 @@ pub fn bench_function_n_with_duration<F, O>(
     mut f: F,
 ) -> Result<Vec<MeasureResult>, BenchmarkError>
 where
-    F: FnMut(&mut [Measurer]) -> O + 'static, {
+    F: FnMut(&mut [Measurer]) -> O, {
     let mut measurers = {
         let mut v = Vec::with_capacity(n);
 
