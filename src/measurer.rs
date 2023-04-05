@@ -5,9 +5,9 @@ use crate::{black_box, MeasureResult};
 #[derive(Debug, Default)]
 /// To measure the execution time.
 pub struct Measurer {
-    pub(crate) seq: u128,
+    pub(crate) seq:    u128,
     pub(crate) result: Option<MeasureResult>,
-    pub(crate) pass: bool,
+    pub(crate) pass:   bool,
 }
 
 impl Measurer {
@@ -42,10 +42,10 @@ impl Measurer {
                 result.times += 1;
 
                 result.total_elapsed += elapsed;
-            }
+            },
             None => {
                 self.result = Some(MeasureResult::new(elapsed));
-            }
+            },
         }
     }
 

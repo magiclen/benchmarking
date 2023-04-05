@@ -91,8 +91,14 @@
 //! })
 //! .unwrap();
 //!
-//! println!("Reading a number from a vec takes {:?}!", bench_result[0].elapsed());
-//! println!("Pushing a number into a vec takes {:?}!", bench_result[1].elapsed());
+//! println!(
+//!     "Reading a number from a vec takes {:?}!",
+//!     bench_result[0].elapsed()
+//! );
+//! println!(
+//!     "Pushing a number into a vec takes {:?}!",
+//!     bench_result[1].elapsed()
+//! );
 //! ```
 //!
 //! The `warm_up` and `warm_up_with_duration` functions of the `benchmarking` crate runs on one thread. To warm up all CPUs, you can use the `warm_up_multi_thread` and `warm_up_multi_thread_with_duration` functions instead.
@@ -102,16 +108,18 @@
 mod measure_result;
 mod measurer;
 
-use std::error::Error;
-use std::fmt::{Display, Error as FmtError, Formatter};
-use std::mem::forget;
-use std::ptr::read_volatile;
-use std::sync::{
-    atomic::{AtomicBool, Ordering},
-    mpsc, Arc,
+use std::{
+    error::Error,
+    fmt::{Display, Error as FmtError, Formatter},
+    mem::forget,
+    ptr::read_volatile,
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        mpsc, Arc,
+    },
+    thread,
+    time::{Duration, Instant},
 };
-use std::thread;
-use std::time::{Duration, Instant};
 
 pub use measure_result::MeasureResult;
 pub use measurer::Measurer;
@@ -174,11 +182,9 @@ pub fn warm_up_multi_thread_with_duration(thread_count: usize, duration: Duratio
         for _ in 0..thread_count {
             let lock = Arc::clone(&lock);
 
-            thread::spawn(move || {
-                loop {
-                    if !lock.load(Ordering::Relaxed) {
-                        break;
-                    }
+            thread::spawn(move || loop {
+                if !lock.load(Ordering::Relaxed) {
+                    break;
                 }
             });
         }
