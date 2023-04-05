@@ -3,6 +3,7 @@ name = "benchmarking"
 version = "0.4.12"
 authors = ["Magic Len <len@magiclen.org>"]
 edition = "2021"
+rust-version = "1.56"
 repository = "https://github.com/magiclen/benchmarking"
 homepage = "https://magiclen.org/benchmarking"
 keywords = ["benchmark", "bench", "execution", "time"]
