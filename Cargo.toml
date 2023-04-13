@@ -9,7 +9,6 @@ homepage = "https://magiclen.org/benchmarking"
 keywords = ["benchmark", "bench", "execution", "time"]
 categories = ["development-tools::profiling"]
 description = "This crate can be used to execute something and measure the execution time. It does not output anything to screens and filesystems."
-readme = "README.md"
 license = "MIT"
 include = ["src/**/*", "Cargo.toml", "README.md", "LICENSE"]
 
