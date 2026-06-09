@@ -98,9 +98,9 @@ println!("Reading a number from a vec takes {:?}!", bench_result[0].elapsed());
 println!("Pushing a number into a vec takes {:?}!", bench_result[1].elapsed());
 ```
 
-* The `warm_up` and `warm_up_with_duration` functions of the `benchmarking` crate runs on one thread. To warm up all CPUs, you can use the `warm_up_multi_thread` and `warm_up_multi_thread_with_duration` functions instead.
-* The `measure_function` and `measure_function_with_times` functions of the `benchmarking` crate can execute a closure for N times. To execute it repeatly for a while instead, you can use the `bench_function` and `bench_function_with_duration` functions.
-* To execute a closure with multiple threads to measure the throughput, you can use the `multi_thread_bench_function` and `multi_thread_bench_function_with_duration` functions of the `benchmarking` crate.
+* The `warm_up` and `warm_up_with_duration` functions of the `benchmarking` crate run on one thread. To warm up all CPUs, you can use the `warm_up_multi_thread` and `warm_up_multi_thread_with_duration` functions instead.
+* The `measure_function` and `measure_function_with_times` functions of the `benchmarking` crate can execute a closure for N times. The `times` argument of the `_with_times` functions must be greater than `0`, and this condition is checked by `debug_assert!` in debug builds. To execute it repeatedly for a while instead, you can use the `bench_function` and `bench_function_with_duration` functions.
+* To execute a closure with multiple threads to measure the throughput, you can use the `multi_thread_bench_function`, `multi_thread_bench_function_with_duration`, `multi_thread_bench_function_n`, and `multi_thread_bench_function_n_with_duration` functions of the `benchmarking` crate. These functions aggregate measured operation counts across all threads and average elapsed time by thread count, so `MeasureResult::speed` represents approximate total throughput, not per-thread latency.
 
 ## Crates.io
 

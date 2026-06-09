@@ -1,109 +1,111 @@
-//! # Benchmarking
-//!
-//! This crate can be used to execute something and measure the execution time. It does not output anything to screens and filesystems.
-//!
-//! ## Examples
-//!
-//! ```rust
-//! const VEC_LENGTH: usize = 100;
-//!
-//! benchmarking::warm_up();
-//!
-//! let bench_result = benchmarking::measure_function(|measurer| {
-//!     let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
-//!
-//!     unsafe {
-//!         vec.set_len(VEC_LENGTH);
-//!     }
-//!
-//!     for i in 0..VEC_LENGTH {
-//!         measurer.measure(|| vec[i]);
-//!     }
-//!
-//!     vec
-//! })
-//! .unwrap();
-//!
-//! println!("Reading a number from a vec takes {:?}!", bench_result.elapsed());
-//! ```
-//!
-//! ```rust
-//! const VEC_LENGTH: usize = 100;
-//!
-//! benchmarking::warm_up();
-//!
-//! let bench_result = benchmarking::measure_function(|measurer| {
-//!     let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
-//!
-//!     measurer.measure(|| {
-//!         for i in 0..VEC_LENGTH {
-//!             vec.push(i);
-//!         }
-//!     });
-//!
-//!     vec
-//! })
-//! .unwrap();
-//!
-//! println!("Filling 0 to 99 into a vec takes {:?}!", bench_result.elapsed());
-//! ```
-//!
-//! ```rust
-//! const VEC_LENGTH: usize = 100;
-//!
-//! benchmarking::warm_up();
-//!
-//! let bench_result = benchmarking::measure_function(|measurer| {
-//!     let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
-//!
-//!     for loop_seq in 0..VEC_LENGTH {
-//!         measurer.measure(|| {
-//!             vec.push(loop_seq);
-//!         });
-//!     }
-//!
-//!     vec
-//! })
-//! .unwrap();
-//!
-//! println!("Pushing a number into a vec takes {:?}!", bench_result.elapsed());
-//! ```
-//!
-//! ```rust
-//! const VEC_LENGTH: usize = 100;
-//!
-//! benchmarking::warm_up();
-//!
-//! let bench_result = benchmarking::measure_function_n(2, |measurers| {
-//!     let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
-//!
-//!     for i in 0..VEC_LENGTH {
-//!         measurers[1].measure(|| {
-//!             vec.push(i);
-//!         });
-//!     }
-//!
-//!     for i in 0..VEC_LENGTH {
-//!         measurers[0].measure(|| vec[i]);
-//!     }
-//!
-//!     vec
-//! })
-//! .unwrap();
-//!
-//! println!(
-//!     "Reading a number from a vec takes {:?}!",
-//!     bench_result[0].elapsed()
-//! );
-//! println!(
-//!     "Pushing a number into a vec takes {:?}!",
-//!     bench_result[1].elapsed()
-//! );
-//! ```
-//!
-//! The `warm_up` and `warm_up_with_duration` functions of the `benchmarking` crate runs on one thread. To warm up all CPUs, you can use the `warm_up_multi_thread` and `warm_up_multi_thread_with_duration` functions instead.
-//! The `measure_function` and `measure_function_with_times` functions of the `benchmarking` crate can execute a closure for N times. To execute it repeatly for a while instead, you can use the `bench_function` and `bench_function_with_duration` functions.
-//! To execute a closure with multiple threads to measure the throughput, you can use the `multi_thread_bench_function` and `multi_thread_bench_function_with_duration` functions of the `benchmarking` crate.
+/*!
+# Benchmarking
+
+This crate can be used to execute something and measure the execution time. It does not output anything to screens and filesystems.
+
+## Examples
+
+```rust
+const VEC_LENGTH: usize = 100;
+
+benchmarking::warm_up();
+
+let bench_result = benchmarking::measure_function(|measurer| {
+    let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
+
+    unsafe {
+        vec.set_len(VEC_LENGTH);
+    }
+
+    for i in 0..VEC_LENGTH {
+        measurer.measure(|| vec[i]);
+    }
+
+    vec
+})
+.unwrap();
+
+println!("Reading a number from a vec takes {:?}!", bench_result.elapsed());
+```
+
+```rust
+const VEC_LENGTH: usize = 100;
+
+benchmarking::warm_up();
+
+let bench_result = benchmarking::measure_function(|measurer| {
+    let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
+
+    measurer.measure(|| {
+        for i in 0..VEC_LENGTH {
+            vec.push(i);
+        }
+    });
+
+    vec
+})
+.unwrap();
+
+println!("Filling 0 to 99 into a vec takes {:?}!", bench_result.elapsed());
+```
+
+```rust
+const VEC_LENGTH: usize = 100;
+
+benchmarking::warm_up();
+
+let bench_result = benchmarking::measure_function(|measurer| {
+    let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
+
+    for loop_seq in 0..VEC_LENGTH {
+        measurer.measure(|| {
+            vec.push(loop_seq);
+        });
+    }
+
+    vec
+})
+.unwrap();
+
+println!("Pushing a number into a vec takes {:?}!", bench_result.elapsed());
+```
+
+```rust
+const VEC_LENGTH: usize = 100;
+
+benchmarking::warm_up();
+
+let bench_result = benchmarking::measure_function_n(2, |measurers| {
+    let mut vec: Vec<usize> = Vec::with_capacity(VEC_LENGTH);
+
+    for i in 0..VEC_LENGTH {
+        measurers[1].measure(|| {
+            vec.push(i);
+        });
+    }
+
+    for i in 0..VEC_LENGTH {
+        measurers[0].measure(|| vec[i]);
+    }
+
+    vec
+})
+.unwrap();
+
+println!(
+    "Reading a number from a vec takes {:?}!",
+    bench_result[0].elapsed()
+);
+println!(
+    "Pushing a number into a vec takes {:?}!",
+    bench_result[1].elapsed()
+);
+```
+
+* The `warm_up` and `warm_up_with_duration` functions of the `benchmarking` crate run on one thread. To warm up all CPUs, you can use the `warm_up_multi_thread` and `warm_up_multi_thread_with_duration` functions instead.
+* The `measure_function` and `measure_function_with_times` functions of the `benchmarking` crate can execute a closure for N times. To execute it repeatedly for a while instead, you can use the `bench_function` and `bench_function_with_duration` functions.
+* To execute a closure with multiple threads to measure the throughput, you can use the `multi_thread_bench_function`, `multi_thread_bench_function_with_duration`, `multi_thread_bench_function_n`, and `multi_thread_bench_function_n_with_duration` functions of the `benchmarking` crate. These functions aggregate measured operation counts across all threads and average elapsed time by thread count, so `MeasureResult::speed` represents approximate total throughput, not per-thread latency.
+*/
 
 mod measure_result;
 mod measurer;
@@ -111,8 +113,7 @@ mod measurer;
 use std::{
     error::Error,
     fmt::{Display, Error as FmtError, Formatter},
-    mem::forget,
-    ptr::read_volatile,
+    hint::black_box,
     sync::{
         atomic::{AtomicBool, Ordering},
         mpsc, Arc,
@@ -206,6 +207,9 @@ where
 }
 
 /// Run a function with a specific times and measure its execution time.
+///
+/// The `times` argument must be greater than `0`. This condition is checked by
+/// `debug_assert!` in debug builds.
 pub fn measure_function_with_times<F, O>(
     times: u64,
     mut f: F,
@@ -228,6 +232,8 @@ where
     };
 
     for _ in 1..times {
+        measurer.seq += 1;
+
         black_box(f(&mut measurer));
 
         if measurer.pass {
@@ -239,8 +245,6 @@ where
             measure_result.times += result.times;
             measure_result.total_elapsed += result.total_elapsed;
         }
-
-        measurer.seq += 1;
     }
 
     Ok(measure_result)
@@ -277,6 +281,8 @@ where
     let start = Instant::now();
 
     loop {
+        measurer.seq += 1;
+
         black_box(f(&mut measurer));
 
         if measurer.pass {
@@ -292,8 +298,6 @@ where
         if start.elapsed() >= duration {
             break;
         }
-
-        measurer.seq += 1;
     }
 
     Ok(measure_result)
@@ -421,8 +425,6 @@ where
     Ok(measure_result)
 }
 
-// TODO n
-
 #[inline]
 /// Run a function 10 times and measure its execution time.
 pub fn measure_function_n<F, O>(n: usize, f: F) -> Result<Vec<MeasureResult>, BenchmarkError>
@@ -432,6 +434,9 @@ where
 }
 
 /// Run a function with a specific times and measure its execution time.
+///
+/// The `times` argument must be greater than `0`. This condition is checked by
+/// `debug_assert!` in debug builds.
 pub fn measure_function_n_with_times<F, O>(
     n: usize,
     times: u64,
@@ -740,19 +745,11 @@ where
             measure_result.times += result.times;
             measure_result.total_elapsed += result.total_elapsed;
         }
+    }
 
-        for measure_result in measure_results.iter_mut() {
-            measure_result.total_elapsed /= number_of_threads as u32;
-        }
+    for measure_result in measure_results.iter_mut() {
+        measure_result.total_elapsed /= number_of_threads as u32;
     }
 
     Ok(measure_results)
-}
-
-pub(crate) fn black_box<T>(dummy: T) -> T {
-    unsafe {
-        let ret = read_volatile(&dummy);
-        forget(dummy);
-        ret
-    }
 }

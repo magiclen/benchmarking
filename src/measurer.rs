@@ -13,25 +13,25 @@ pub struct Measurer {
 impl Measurer {
     #[inline]
     /// Get the sequence of the current measurement.
-    pub fn get_seq(&self) -> u128 {
+    pub const fn get_seq(&self) -> u128 {
         self.seq
     }
 
     #[inline]
     /// Get the result.
-    pub fn get_result(&self) -> Option<&MeasureResult> {
+    pub const fn get_result(&self) -> Option<&MeasureResult> {
         self.result.as_ref()
     }
 
     #[inline]
     /// Check this measurer whether it is measured.
-    pub fn is_measured(&self) -> bool {
-        self.result.is_none()
+    pub const fn is_measured(&self) -> bool {
+        self.result.is_some()
     }
 
     #[inline]
     /// Check this measurer whether it is passed.
-    pub fn is_passed(&self) -> bool {
+    pub const fn is_passed(&self) -> bool {
         self.pass
     }
 
@@ -63,7 +63,13 @@ impl Measurer {
 
     #[inline]
     /// Pass the current measurement.
-    pub fn pass(&mut self) {
+    ///
+    /// This skips the current outer benchmark invocation when the runner collects results.
+    /// Any measurements already recorded by this measurer during the same invocation are
+    /// discarded by the runner.
+    ///
+    /// If every invocation is passed, the returned `MeasureResult` has `times() == 0`.
+    pub const fn pass(&mut self) {
         self.pass = true;
     }
 }
