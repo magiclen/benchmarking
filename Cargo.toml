@@ -1,9 +1,9 @@
 [package]
 name = "benchmarking"
-version = "0.4.14"
+version = "0.4.15"
 authors = ["Magic Len <len@magiclen.org>"]
 edition = "2021"
-rust-version = "1.66"
+rust-version = "1.83"
 repository = "https://github.com/magiclen/benchmarking"
 homepage = "https://magiclen.org/benchmarking"
 keywords = ["benchmark", "bench", "execution", "time"]
